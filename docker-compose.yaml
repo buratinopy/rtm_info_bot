@@ -1,0 +1,33 @@
+version: '3.5'
+services:
+  unicon:
+    image: rtm_tg_bot
+    environment:
+      - APP_CONFIG_PATH=/appconfig
+    networks:
+      - internal
+    restart: on-failure
+    depends_on:
+      - redis
+    volumes:
+      - "/opt/rtm_tg_bot/appconfig:/appconfig"
+
+  redis:
+    image: 'docker.io/bitnami/redis:6.0-debian-10'
+    environment:
+      - REDIS_PASSWORD=in4soc
+    hostname: redis
+    networks:
+      - internal
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+networks:
+  internal:
+
+volumes:
+  redis_data:
+    driver: local
+

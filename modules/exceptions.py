@@ -1,0 +1,2 @@
+class SettingsFileNotExistError(Exception):
+    pass
