@@ -62,8 +62,10 @@ def rtm(message):
     constraint = env.settings['constraints']['method_call']['rtm']
     if message.chat.type != "private" \
             and (
-            (isinstance(constraint['chats'], str) and constraint['chats'] == "all")
-            or (isinstance(constraint['chats'], list) and message.chat.id in constraint['chats'])):
+            (isinstance(constraint['chats_allowed'], str) and constraint['chats_allowed'] == "all")
+            or (isinstance(constraint['chats_allowed'], list) and message.chat.id in constraint['chats_allowed'])) \
+            and constraint.get('time'):
+        # TODO: переписать это говно в декоратор, что бы можно было ограничивать любые методы [1]
         env.redis.set(
             name=f"last_execute_rtm_{message.chat.id}",
             value=datetime.now().isoformat(),
@@ -105,8 +107,12 @@ def pizdabol(message):
 
 
 def node_roi(message):
-    if message.chat.id < 0:
-        env.bot.reply_to(message, "Метод доступен только в личных сообщениях бота", parse_mode='html')
+    constraint = env.settings['constraints']['method_call']['roi']
+    # TODO: переписать это говно в декоратор, что бы можно было ограничивать любые методы [2]
+    if message.chat.id < 0 and message.chat.id not in constraint['chats_allowed']:
+        env.bot.reply_to(message,
+                         text="Метод доступен только в личных сообщениях бота или в авторизованных группах.",
+                         parse_mode='html')
         return
     roi_params = {
         "day": 1,
