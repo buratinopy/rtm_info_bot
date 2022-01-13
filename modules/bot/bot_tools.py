@@ -221,7 +221,10 @@ def convert(message):
 💵 <b>Converted balance:</b>
         Your {balance} RTM ~= {convert_balance.get('priceusd')} USD
         Your {balance} RTM ~= {convert_balance.get('pricerub')} RUB
+        Your {balance} RTM ~= {tofixed(float(convert_balance.get('pricerub')) / 55, 1)} банок "Балтика 9"
 """
+    print(tofixed(float(convert_balance.get('pricerub')), 2))
+    print(type(tofixed(float(convert_balance.get('pricerub')), 2)))
     env.bot.reply_to(message, return_message, parse_mode='html')
 
 
