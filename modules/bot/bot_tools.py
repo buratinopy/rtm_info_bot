@@ -123,7 +123,7 @@ def node_roi(message):
         "9month": 270,
         "annual": 365
     }
-    return_message = "<b>Your profitability from {deposit} RTM in smartnode will be:</b>\n" \
+    return_message = "<b>Your profitability from {deposit} RTM in Inodez sharednode will be:</b>\n" \
                      "<b>😀 Day</b>: {day} RTM (+{day_percent}%)\n" \
                      "<b>😅 Week</b>: {week} RTM (+{week_percent}%)\n" \
                      "<b>🥳 Month</b>: {month} RTM (+{month_percent}%)\n" \
@@ -157,7 +157,7 @@ def node_roi(message):
                                   "Example of correct format: <b>/roi 10000</b>", parse_mode='html')
         return
     deposit = check_value(args[1])
-    if deposit < 1000:
+    if deposit < 500:
         env.bot.reply_to(message, "The iNodez does not work with deposits less than 1000 RTM", parse_mode='html')
         return
 
