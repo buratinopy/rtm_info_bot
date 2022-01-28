@@ -33,16 +33,19 @@ def rtm(message):
                 {kwargs.get('ltc_24h_change')}% LTC
                 {kwargs.get('usd_24h_change')}% USD
                 {kwargs.get('rub_24h_change')}% RUB
+                {kwargs.get('uah_24h_change')}% UAH
     💵 Price: 
                 {kwargs.get('pricesat')} Satoshi
                 {kwargs.get('pricelit')} Litoshi
                 {kwargs.get('priceusd')} USD
                 {kwargs.get('pricerub')} RUB
+                {kwargs.get('priceuah')} UAH
     📊 24 Hours Volume: 
                 {kwargs.get('vol24hbtc')} BTC
                 {kwargs.get('vol24hltc')} LTC
                 {kwargs.get('vol24husd')} USD
                 {kwargs.get('vol24hrub')} RUB
+                {kwargs.get('vol24huah')} UAH
     💰 Market Cap: {kwargs.get('marketcap')}
     ℹ Smartnodes: {kwargs.get('snenabled')} enabled / {kwargs.get('sntotal')} total
     🔒 Locked In Smartnodes: {kwargs.get('locked')}
@@ -154,7 +157,7 @@ def node_roi(message):
 
     if len(args) < 2 or not check_value(args[1]):
         env.bot.reply_to(message, "<b>Invalid argument!</b>\n"
-                                  "Example of correct format: <b>/roi 10000</b>", parse_mode='html')
+                                  "Example of correct format: <b>/roi 500</b>", parse_mode='html')
         return
     deposit = check_value(args[1])
     if deposit < 500:
@@ -203,7 +206,8 @@ def convert(message):
         'Satoshi': 'pricesat',
         'Litoshi': 'pricelit',
         'USD': 'priceusd',
-        'RUB': 'pricerub'
+        'RUB': 'pricerub',
+        'UAH': 'priceuah'
     }
 
     rtm_data = orjson.loads(env.redis.get('rtm_bot_data'))
@@ -211,16 +215,18 @@ def convert(message):
     convert_balance = {}
     for currency, keyname in convert_map.items():
         price[keyname] = float(rtm_data.get(keyname, 0))
-        convert_balance[keyname] = tofixed(price.get(keyname) * balance, 3)
+        convert_balance[keyname] = tofixed(price.get(keyname) * balance, 2)
     return_message = f"""
 💵 <b>Price RTM on the CoinGecko:</b> 
         1 RTM == {price.get('pricesat')} Satoshi
         1 RTM == {price.get('pricelit')} Litoshi
         1 RTM == {price.get('priceusd')} USD
         1 RTM == {price.get('pricerub')} RUB
+        1 RTM == {price.get('priceuah')} UAH
 💵 <b>Converted balance:</b>
         Your {balance} RTM ~= {convert_balance.get('priceusd')} USD
         Your {balance} RTM ~= {convert_balance.get('pricerub')} RUB
+        Your {balance} RTM ~= {convert_balance.get('priceuah')} UAH
         Your {balance} RTM ~= {int(float(convert_balance.get('pricerub')) / 55)} банок "Балтика 9" (~55р/0.5л)
         Your {balance} RTM ~= {int(float(convert_balance.get('pricerub')) / 129)} бутылок "Охота крепкое" (~129р/1.35л)
 """

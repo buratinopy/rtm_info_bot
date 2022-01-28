@@ -41,42 +41,52 @@ def smartnode():
 
 @retry(Exception, tries=5, delay=2, backoff=2, logger=logger)
 def get_price_bts():
-    _pricebtc = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='btc', include_24hr_vol=True,
-                                            include_24hr_change=True)
-    pricesat = tofixed(_pricebtc.get('raptoreum', {}).get('btc', 0) * 100000000, 1)
-    vol24hbtc = tofixed(_pricebtc.get('raptoreum', {}).get('btc_24h_vol', 0), 3)
-    btc_24h_change = tofixed(_pricebtc.get('raptoreum', {}).get('btc_24h_change', 1))
+    price = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='btc', include_24hr_vol=True,
+                                        include_24hr_change=True)
+    pricesat = tofixed(price.get('raptoreum', {}).get('btc', 0) * 100000000, 0)
+    vol24hbtc = tofixed(price.get('raptoreum', {}).get('btc_24h_vol', 0), 3)
+    btc_24h_change = tofixed(price.get('raptoreum', {}).get('btc_24h_change', 1))
     return pricesat, vol24hbtc, btc_24h_change
 
 
 @retry(Exception, tries=5, delay=2, backoff=2, logger=logger)
 def get_price_ltc():
-    _priceltc = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='ltc', include_24hr_vol=True,
-                                            include_24hr_change=True)
-    pricelit = tofixed(_priceltc.get('raptoreum', {}).get('ltc', 0) * 100000000, 1)
-    vol24hltc = tofixed(_priceltc.get('raptoreum', {}).get('ltc_24h_vol', 0))
-    ltc_24h_change = tofixed(_priceltc.get('raptoreum', {}).get('ltc_24h_change', 1))
+    price = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='ltc', include_24hr_vol=True,
+                                        include_24hr_change=True)
+    pricelit = tofixed(price.get('raptoreum', {}).get('ltc', 0) * 100000000, 0)
+    vol24hltc = tofixed(price.get('raptoreum', {}).get('ltc_24h_vol', 0))
+    ltc_24h_change = tofixed(price.get('raptoreum', {}).get('ltc_24h_change', 1))
     return pricelit, vol24hltc, ltc_24h_change
 
 
 @retry(Exception, tries=5, delay=2, backoff=2, logger=logger)
 def get_price_usd():
-    _priceusd = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='usd', include_24hr_vol=True,
-                                            include_24hr_change=True)
-    priceusd = tofixed(_priceusd.get('raptoreum', {}).get('usd', 0), 5)
-    vol24husd = tofixed(_priceusd.get('raptoreum', {}).get('usd_24h_vol', 0))
-    usd_24h_change = tofixed(_priceusd.get('raptoreum', {}).get('usd_24h_change', 1))
+    price = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='usd', include_24hr_vol=True,
+                                        include_24hr_change=True)
+    priceusd = tofixed(price.get('raptoreum', {}).get('usd', 0), 4)
+    vol24husd = tofixed(price.get('raptoreum', {}).get('usd_24h_vol', 0))
+    usd_24h_change = tofixed(price.get('raptoreum', {}).get('usd_24h_change', 1))
     return priceusd, vol24husd, usd_24h_change
 
 
 @retry(Exception, tries=5, delay=2, backoff=2, logger=logger)
 def get_price_rub():
-    _pricerub = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='rub', include_24hr_vol=True,
-                                            include_24hr_change=True)
-    pricerub = tofixed(_pricerub.get('raptoreum', {}).get('rub', 0), 3)
-    vol24hrub = tofixed(_pricerub.get('raptoreum', {}).get('rub_24h_vol', 0))
-    rub_24h_change = tofixed(_pricerub.get('raptoreum', {}).get('rub_24h_change', 1))
+    price = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='rub', include_24hr_vol=True,
+                                        include_24hr_change=True)
+    pricerub = tofixed(price.get('raptoreum', {}).get('rub', 0), 2)
+    vol24hrub = tofixed(price.get('raptoreum', {}).get('rub_24h_vol', 0))
+    rub_24h_change = tofixed(price.get('raptoreum', {}).get('rub_24h_change', 1))
     return pricerub, vol24hrub, rub_24h_change
+
+
+@retry(Exception, tries=5, delay=2, backoff=2, logger=logger)
+def get_price_uah():
+    price = env.coingecko_api.get_price(ids='raptoreum', vs_currencies='uah', include_24hr_vol=True,
+                                        include_24hr_change=True)
+    priceuah = tofixed(price.get('raptoreum', {}).get('uah', 0), 2)
+    vol24huah = tofixed(price.get('raptoreum', {}).get('uah_24h_vol', 0))
+    uah_24h_change = tofixed(price.get('raptoreum', {}).get('uah_24h_change', 1))
+    return priceuah, vol24huah, uah_24h_change
 
 
 def update_rtm_data_cache(redis_connection):
@@ -91,6 +101,7 @@ def update_rtm_data_cache(redis_connection):
     price_ltc_result = pool.apply_async(get_price_ltc)
     price_usd_result = pool.apply_async(get_price_usd)
     price_rub_result = pool.apply_async(get_price_rub)
+    price_uah_result = pool.apply_async(get_price_uah)
 
     mining_info_cache, blocks, difficulty, networkmhashps = mining_info_result.get()
     mining_info_cache['_service_dict'] = True
@@ -101,6 +112,7 @@ def update_rtm_data_cache(redis_connection):
     pricelit, vol24hltc, ltc_24h_change = price_ltc_result.get()
     priceusd, vol24husd, usd_24h_change = price_usd_result.get()
     pricerub, vol24hrub, rub_24h_change = price_rub_result.get()
+    priceuah, vol24huah, uah_24h_change = price_uah_result.get()
 
     variables = {}
     for k, v in vars().items():
